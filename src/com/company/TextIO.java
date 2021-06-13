@@ -9,9 +9,9 @@ public class TextIO {
 
     private Scanner scan;
 
-    public TextIO()
-    {
+    public TextIO() {
         this.scan = new Scanner(System.in);
+        scan.useDelimiter("\n");
     }
 
     /**
@@ -19,8 +19,7 @@ public class TextIO {
      *
      * @param msg The message to be displayed to the console.
      */
-    public void display(String msg)
-    {
+    public void display(String msg) {
         System.out.println(msg);
     }
 
@@ -58,19 +57,19 @@ public class TextIO {
         return largest;
     }
 
-    public String formatReport(String[][] results, int[] columnWidths) {
+    public String formatReport(String[][] results, int padding, int[] columnWidths) {
         String report = "";
         int rowLength = results[0].length;
         int colLength = results.length;
         for (int i = 0; i < rowLength; i++) {
             for (int j = 0; j < colLength; j++) {
-                report += results[j][i];
+                String data = results[j][i];
+                int columnWidth = columnWidths[j];
+                report += String.format("%-" + (columnWidth + padding) + "s", data);
             }
 
             report += "\n";
         }
-
-        System.out.println(report);
         return report;
     }
 
@@ -80,8 +79,7 @@ public class TextIO {
      * @param msg Message to be displayed
      * @return Input from user
      */
-    public String prompt(String msg)
-    {
+    public String prompt(String msg) {
         this.display(msg);
         return this.scan.next();
     }
