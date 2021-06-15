@@ -2,77 +2,56 @@ import java.sql.SQLException;
 
 public class REC {
     private final TextIO textView;
-    private final CommandParser parser;
+    private final ArgParser parser;
 
     public REC() {
         this.textView = new TextIO();
-        parser = new CommandParser();
+        parser = new ArgParser();
+        parser.addCommand("help", 0);
+        parser.addCommand("quit", 0);
+        parser.addCommand("rpt", 3);
         DataSource.getInstance();
     }
 
     void start() {
         while (true) {
-            String userCommand = textView.prompt("Please enter a command");
-            String command = parser.parseCommand(userCommand);
-            String[] args = parser.parseArgs(userCommand);
-
+            String userCommand = textView.prompt("Please enter a command.");
+            String command = parser.command(userCommand);
             switch (command) {
                 case "help":
-                    if (args.length == 0)
-                        helpCommand();
+                    parser.listCommands();
                     break;
                 case "quit":
-                    if (args.length == 0)
-                        quitCommand();
+                    quitCommand();
                     break;
                 case "rpt":
-                    if (args.length > 0)
-                        reportCommand(userCommand);
-                    else {
-                        System.out.println();
-                        System.out.println("Not enough arguments. [listing <min> <max>]");
-                    }
+                    reportCommand(userCommand);
                     break;
                 default:
                     System.out.println();
-                    System.out.println("Invalid command. list commands by typing \"help\"");
+                    System.out.println("Command not found");
             }
-            System.out.println();
         }
     }
 
-    void helpCommand() {
-        System.out.println();
-        System.out.println("help");
-        System.out.println("quit");
-        System.out.println("rpt [listing <min> <max>]");
+    public void reportCommand(String userCommand) {
+        String[] args = parser.args(userCommand);
+        String subcommand = args[1];
+        switch (subcommand) {
+            case "listing":
+                listings(args);
+                break;
+            default: break;
+        }
     }
 
     void quitCommand() {
         System.exit(0);
     }
 
-    void reportCommand(String userCommand) {
-        String[] args = parser.parseArgs(userCommand);
-        switch (args[0]) {
-            case "listing":
-                if (args.length == 3) {
-                    String min = args[1];
-                    String max = args[2];
-                    listing(min, max);
-                } else {
-                    System.out.println();
-                    System.out.println("Not enough arguments <min> <max>");
-                }
-                break;
-
-            default:
-                System.out.println();
-                System.out.println("Invalid Command");
-        }
-    }
-
-    void listing(String min, String max) {
+    void listings(String[] args) {
+        String min = args[2];
+        String max = args[3];
         try {
             String query = "SELECT Listing_ID, Num_Bedrooms, Num_Baths, City, State, Price FROM PROPERTIES WHERE PRICE BETWEEN "
                     + min + " AND " + max + " ORDER BY PRICE";
