@@ -14,24 +14,16 @@ public class REC {
         while (true) {
             String userCommand = textView.prompt("Please enter a command");
             String command = parser.parseCommand(userCommand);
-            String[] args = parser.parseArgs(userCommand);
 
             switch (command) {
                 case "help":
-                    if (args.length == 0)
-                        helpCommand();
+                    helpCommand();
                     break;
                 case "quit":
-                    if (args.length == 0)
-                        quitCommand();
+                    quitCommand();
                     break;
                 case "rpt":
-                    if (args.length > 0)
-                        reportCommand(userCommand);
-                    else {
-                        System.out.println();
-                        System.out.println("Not enough arguments. [listing <min> <max>]");
-                    }
+                    reportCommand(userCommand);
                     break;
                 default:
                     System.out.println();
@@ -45,7 +37,7 @@ public class REC {
         System.out.println();
         System.out.println("help");
         System.out.println("quit");
-        System.out.println("rpt [listing <min> <max>]");
+        System.out.println("rpt [listing <min> <max>], [summary]");
     }
 
     void quitCommand() {
@@ -60,15 +52,14 @@ public class REC {
                     String min = args[1];
                     String max = args[2];
                     listing(min, max);
-                } else {
-                    System.out.println();
-                    System.out.println("Not enough arguments <min> <max>");
                 }
                 break;
 
+            case "summary":
+                if (args.length == 1)
+                    summary();
             default:
-                System.out.println();
-                System.out.println("Invalid Command");
+                System.out.println("Invalid command. list commands by typing \"help\"");
         }
     }
 
@@ -88,4 +79,18 @@ public class REC {
         }
     }
 
+    void summary() {
+        try {
+            String query = "SELECT Count(*) AS Houses_Available, MIN(PRICE) AS MIN_PRICE, MAX(PRICE) AS MAX_PRICE, ROUND(AVG(PRICE), 2) AS AVG_PRICE FROM PROPERTIES";
+            String[][] dataset = DataSource.getInstance().executeQuery(query);
+            int[] columnWidths = textView.calculateColumnWidth(dataset);
+            String report = textView.formatReport(dataset, 10, columnWidths);
+            textView.display(report);
+            quitCommand();
+        } catch (SQLException e) {
+
+        } finally {
+
+        }
+    }
 }
