@@ -11,26 +11,24 @@ public class REC {
     }
 
     void start() {
-        while (true) {
-            String userCommand = textView.prompt("Please enter a command");
-            String command = parser.parseCommand(userCommand);
+        String userCommand = textView.prompt("Please enter a command");
+        String command = parser.parseCommand(userCommand);
 
-            switch (command) {
-                case "help":
-                    helpCommand();
-                    break;
-                case "quit":
-                    quitCommand();
-                    break;
-                case "rpt":
-                    reportCommand(userCommand);
-                    break;
-                default:
-                    System.out.println();
-                    System.out.println("Invalid command. list commands by typing \"help\"");
-            }
-            System.out.println();
+        switch (command) {
+            case "help":
+                helpCommand();
+                break;
+            case "quit":
+                quitCommand();
+                break;
+            case "rpt":
+                reportCommand(userCommand);
+                break;
+            default:
+                System.out.println();
+                System.out.println("Invalid command. list commands by typing \"help\"");
         }
+        System.out.println();
     }
 
     void helpCommand() {
@@ -56,8 +54,8 @@ public class REC {
                 break;
 
             case "summary":
-                if (args.length == 1)
-                    summary();
+                summary();
+                break;
             default:
                 System.out.println("Invalid command. list commands by typing \"help\"");
         }
@@ -65,8 +63,8 @@ public class REC {
 
     void listing(String min, String max) {
         try {
-            String query = "SELECT Listing_ID, Num_Bedrooms, Num_Baths, City, State, Price FROM PROPERTIES WHERE PRICE BETWEEN "
-                    + min + " AND " + max + " ORDER BY PRICE";
+            String query = "SELECT Listing_ID, Num_Bedrooms, Num_Baths, City, State,"
+                    + "Price FROM PROPERTIES WHERE PRICE BETWEEN " + min + " AND " + max + " ORDER BY PRICE";
             String[][] dataset = DataSource.getInstance().executeQuery(query);
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
@@ -81,16 +79,16 @@ public class REC {
 
     void summary() {
         try {
-            String query = "SELECT Count(*) AS Houses_Available, MIN(PRICE) AS MIN_PRICE, MAX(PRICE) AS MAX_PRICE, ROUND(AVG(PRICE), 2) AS AVG_PRICE FROM PROPERTIES";
+            String query = "SELECT STATE, Count(*) AS COUNT, MIN(PRICE) AS LOW, MAX(PRICE) AS HIGH, ROUND(AVG(PRICE)) AS AVERAGE FROM PROPERTIES GROUP BY STATE";
             String[][] dataset = DataSource.getInstance().executeQuery(query);
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
             textView.display(report);
             quitCommand();
         } catch (SQLException e) {
-
+            System.out.println("Error getting data: " + e.getLocalizedMessage());
         } finally {
-
+            DataSource.getInstance().close();
         }
     }
 }
