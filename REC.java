@@ -65,7 +65,7 @@ public class REC {
         try {
             String query = "SELECT Listing_ID, Num_Bedrooms, Num_Baths, City, State,"
                     + "Price FROM PROPERTIES WHERE PRICE BETWEEN " + min + " AND " + max + " ORDER BY PRICE";
-            DOA dataset = DataSource.getInstance().executeQuery(query);
+            DAO dataset = DataSource.getInstance().executeQuery(query);
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
             textView.display(report);

@@ -1,11 +1,11 @@
 import java.sql.*;
 
-public class DOA {
+public class DAO {
     
     private ResultSet results;
     private ResultSetMetaData metadata;
 
-    public DOA(ResultSet results, ResultSetMetaData metadata) {
+    public DAO(ResultSet results, ResultSetMetaData metadata) {
         this.results = results;
         this.metadata = metadata;
     }

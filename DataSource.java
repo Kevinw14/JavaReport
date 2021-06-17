@@ -20,11 +20,11 @@ public class DataSource {
         return obj;
     }
     
-    public DOA executeQuery(String query) throws SQLException {
+    public DAO executeQuery(String query) throws SQLException {
         Statement statement = conn.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         ResultSet results = statement.executeQuery(query);
         ResultSetMetaData metaData = results.getMetaData();
-        DOA doa = new DOA(results, metaData);
+        DAO dao = new DAO(results, metaData);
 
         // String[][] dataset = new String[metaData.getColumnCount()][];
 
@@ -42,7 +42,7 @@ public class DataSource {
 
         //     dataset[i - 1] = columnDataset;
         // }
-        return doa;
+        return dao;
     }
     
     private int getRowCount(ResultSet results) throws SQLException {
