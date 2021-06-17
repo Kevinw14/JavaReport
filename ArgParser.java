@@ -2,37 +2,41 @@ import java.util.ArrayList;
 
 public class ArgParser {
 
-    private ArrayList<Command> commands;
+    private ArrayList<ParsableCommand> commands;
 
     public ArgParser() {
         commands = new ArrayList<>();
+        ParsableCommand helpCommand = new HelpCommand(commands);
+        addCommand(helpCommand);
     }
 
-    public void addCommand(String commandName, int requiredArguments) {
-        Command command = new Command(commandName, requiredArguments);
-        commands.add(command);
+    public void addCommand(ParsableCommand commmand) {
+        commands.add(commmand);
     }
 
-    public String command(String userCommand) {
-        for (Command command: commands) {
-            if (userCommand.contains(command.getCommand()) && command.hasCorrectAmountOfArgs(userCommand)) {
-                return command.getCommand();
-            }
+    private String command(String userCommand) {
+        return userCommand.split(" ")[0];
+    }
+
+    public void parse(String userCommand) {
+        String commandString = command(userCommand);
+
+        for (ParsableCommand command: commands) {
+            if (command.getName().contains(commandString))
+                command.run();
         }
-        return "";
     }
+    // public String[] args(String userCommand) {
+    //     return userCommand.split(" ");
+    // }
 
-    public String[] args(String userCommand) {
-        return userCommand.split(" ");
-    }
+    // public void listCommands() {
+    //     System.out.println();
 
-    public void listCommands() {
-        System.out.println();
+    //     for (Command command: commands) {
+    //         System.out.println(command.getCommand());
+    //     }
 
-        for (Command command: commands) {
-            System.out.println(command.getCommand());
-        }
-
-        System.out.println();
-    }
+    //     System.out.println();
+    // }
 }
