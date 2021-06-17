@@ -20,27 +20,29 @@ public class DataSource {
         return obj;
     }
     
-    public String[][] executeQuery(String query) throws SQLException {
+    public DOA executeQuery(String query) throws SQLException {
         Statement statement = conn.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         ResultSet results = statement.executeQuery(query);
         ResultSetMetaData metaData = results.getMetaData();
-        String[][] dataset = new String[metaData.getColumnCount()][];
+        DOA doa = new DOA(results, metaData);
 
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            int count = getRowCount(results);
-            String[] columnDataset = new String[count + 1];
-            String columnName = metaData.getColumnName(i);
-            columnDataset[0] = columnName;
+        // String[][] dataset = new String[metaData.getColumnCount()][];
 
-            while (results.next()) {
-                int row = results.getRow();
-                String value = results.getString(columnName);
-                columnDataset[row] = value;
-            }
+        // for (int i = 1; i <= metaData.getColumnCount(); i++) {
+        //     int count = getRowCount(results);
+        //     String[] columnDataset = new String[count + 1];
+        //     String columnName = metaData.getColumnName(i);
+        //     columnDataset[0] = columnName;
 
-            dataset[i - 1] = columnDataset;
-        }
-        return dataset;
+        //     while (results.next()) {
+        //         int row = results.getRow();
+        //         String value = results.getString(columnName);
+        //         columnDataset[row] = value;
+        //     }
+
+        //     dataset[i - 1] = columnDataset;
+        // }
+        return doa;
     }
     
     private int getRowCount(ResultSet results) throws SQLException {
