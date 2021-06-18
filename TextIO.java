@@ -33,6 +33,18 @@ public class TextIO {
         return largest;
     }
 
+    private int smallestAmount(String[] result) {
+        int smallest = Integer.MAX_VALUE;
+
+        for (int i = 0; i < result.length; i++) {
+            if (result[i].length() < smallest) {
+                smallest = result[i].length();
+            }
+        }
+
+        return smallest;
+    }
+
     public String formatReport(String[][] results, int padding, int[] columnWidths) {
         String report = "";
         int rowLength = results[0].length;

@@ -65,7 +65,7 @@ public class REC {
         try {
             String query = "SELECT Listing_ID, Num_Bedrooms, Num_Baths, City, State,"
                     + "Price FROM PROPERTIES WHERE PRICE BETWEEN " + min + " AND " + max + " ORDER BY PRICE";
-            DAO dataset = DataSource.getInstance().executeQuery(query);
+            String[][] dataset = DataSource.getInstance().executeQuery(query);
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
             textView.display(report);
@@ -79,7 +79,7 @@ public class REC {
 
     void summary() {
         try {
-            String query = "SELECT STATE, Count(*) AS COUNT, MIN(PRICE) AS LOW, MAX(PRICE) AS HIGH, ROUND(AVG(PRICE)) AS AVERAGE FROM PROPERTIES GROUP BY STATE";
+            String query = "SELECT STATE, Count(*) AS COUNT, MIN(PRICE) AS LOW, MAX(PRICE) AS HIGH, ROUND(AVG(PRICE)) AS AVERAGE FROM active_properties GROUP BY STATE";
             String[][] dataset = DataSource.getInstance().executeQuery(query);
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
