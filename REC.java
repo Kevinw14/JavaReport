@@ -1,4 +1,6 @@
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class REC {
     private final TextIO textView;
@@ -63,8 +65,8 @@ public class REC {
 
     void listing(String min, String max) {
         try {
-            String query = "SELECT Listing_ID, Num_Bedrooms, Num_Baths, City, State,"
-                    + "Price FROM PROPERTIES WHERE PRICE BETWEEN " + min + " AND " + max + " ORDER BY PRICE";
+            String query = "SELECT Listing_ID, Num_Bedrooms, Num_Baths, City, State, Price FROM PROPERTIES WHERE PRICE BETWEEN "
+                    + min + " AND " + max + " ORDER BY PRICE";
             String[][] dataset = DataSource.getInstance().executeQuery(query);
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
@@ -79,8 +81,9 @@ public class REC {
 
     void summary() {
         try {
-            String query = "SELECT STATE, Count(*) AS COUNT, MIN(PRICE) AS LOW, MAX(PRICE) AS HIGH, ROUND(AVG(PRICE)) AS AVERAGE FROM active_properties GROUP BY STATE";
-            String[][] dataset = DataSource.getInstance().executeQuery(query);
+            String query = "SELECT State, Count(*) AS Count, MIN(PRICE) AS Low, MAX(PRICE) AS High, ROUND(AVG(PRICE)) AS Average FROM active_properties GROUP BY STATE ORDER BY STATE";
+            ArrayList<DAO> daos = DataSource.getInstance().executeDAO(query);
+            String[][] dataset = datasetFromDao(daos);
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
             textView.display(report);
@@ -90,5 +93,50 @@ public class REC {
         } finally {
             DataSource.getInstance().close();
         }
+    }
+
+    private String[] regionSummary() {
+        return new String[0];
+    }
+
+    private int totalCount(ArrayList<DAO> daos) {
+        int totalCount = 0;
+
+        for (int i = 0; i < daos.size(); i++) {
+            totalCount += daos.get(i).getCount();
+        }
+
+        return totalCount;
+    }
+
+    private int minPrice(ArrayList<DAO> daos) {
+        int min = Integer.MAX_VALUE;
+
+        for (int i = 0; i < daos.size(); i++) {
+            if (daos.get(i).getMin() < min) {
+                min = daos.get(i).getMin();
+            }
+        }
+
+        return min;
+    }
+
+    private int maxPrice(ArrayList<DAO> daos) {
+        int max = Integer.MIN_VALUE;
+
+        for (int i = 0; i < daos.size(); i++) {
+            if (daos.get(i).getMax() > max) {
+                max = daos.get(i).getMax();
+            }
+        }
+
+        return max;
+    }
+
+    private String[][] datasetFromDao(ArrayList<DAO> daos) {
+        String[] columns = new String[] { "State", "Count", "Low", "High", "Average" };
+        String[][] dataset = new String[columns.length][];
+
+        return dataset;
     }
 }

@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DataSource {
 
@@ -7,7 +9,8 @@ public class DataSource {
 
     private DataSource() throws SQLException {
         DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-        conn = DriverManager.getConnection("jdbc:oracle:thin:@Worf.radford.edu:1521:itec3", "kwood3", "fykfep-qitMa3-hegwyj");
+        conn = DriverManager.getConnection("jdbc:oracle:thin:@Worf.radford.edu:1521:itec3", "kwood3",
+                "fykfep-qitMa3-hegwyj");
     }
 
     static DataSource getInstance() {
@@ -19,39 +22,72 @@ public class DataSource {
             }
         return obj;
     }
-    
-    public String[][] executeQuery(String query) throws SQLException {
-        Statement statement = conn.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        ResultSet results = statement.executeQuery(query);
-        ResultSetMetaData metaData = results.getMetaData();
-        // DAO dao = new DAO(results, metaData);
 
-        String[][] dataset = new String[metaData.getColumnCount()][];
-
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            int count = getRowCount(results);
-            String[] columnDataset = new String[count + 1];
-            String columnName = metaData.getColumnName(i);
-            columnDataset[0] = columnName;
-
-            while (results.next()) {
-                int row = results.getRow();
-                String value = results.getString(columnName);
-                columnDataset[row] = value;
-            }
-
-            dataset[i - 1] = columnDataset;
-        }
-        return dataset;
-    }
-    
     private int getRowCount(ResultSet results) throws SQLException {
         results.last();
         int count = results.getRow();
         results.beforeFirst();
         return count;
     }
-    
+
+    private String[] getColumnNames(ResultSetMetaData metadata) throws SQLException {
+        int columnCount = metadata.getColumnCount();
+        String[] columnResults = new String[columnCount];
+
+        for (int i = 0; i < columnCount; i++) {
+            columnResults[i] = metadata.getColumnName(i + 1);
+        }
+        return columnResults;
+    }
+
+    private String[] getRow(ResultSet results, ResultSetMetaData metadata) throws SQLException {
+        int columnCount = metadata.getColumnCount();
+        String[] columnResults = new String[columnCount];
+
+        for (int i = 0; i < columnCount; i++) {
+            String data = results.getString(i + 1);
+            columnResults[i] = data;
+        }
+        return columnResults;
+    }
+
+    public String[][] executeQuery(String query) throws SQLException {
+        Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet results = statement.executeQuery(query);
+        ResultSetMetaData metadata = results.getMetaData();
+
+        int rowCount = getRowCount(results);
+        String[][] dataset = new String[rowCount + 1][];
+        dataset[0] = getColumnNames(metadata);
+
+        while (results.next()) {
+            int row = results.getRow();
+            String[] columnResults = getRow(results, metadata);
+            dataset[row] = columnResults;
+        }
+
+        return dataset;
+    }
+
+    public ArrayList<DAO> executeDAO(String query) throws SQLException {
+        Statement statement = conn.createStatement();
+        ResultSet results = statement.executeQuery(query);
+        ArrayList<DAO> daos = new ArrayList<>();
+
+        while (results.next()) {
+            String state = results.getString("State");
+            int count = results.getInt("Count");
+            int min = results.getInt("Low");
+            int max = results.getInt("High");
+            int avg = results.getInt("Average");
+
+            DAO dao = new DAO(state, count, min, max, avg);
+            daos.add(dao);
+        }
+
+        return daos;
+    }
+
     public void close() {
         try {
             conn.close();
