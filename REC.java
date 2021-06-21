@@ -95,8 +95,13 @@ public class REC {
         }
     }
 
-    private String[] regionSummary() {
-        return new String[0];
+    private String[] regionSummary(ArrayList<DAO> daos) {
+        String count = String.valueOf(totalCount(daos));
+        String min = String.valueOf(minPrice(daos));
+        String max = String.valueOf(maxPrice(daos));
+
+        String[] regionSummary = new String[]{"", count, min, max, ""};
+        return regionSummary;
     }
 
     private int totalCount(ArrayList<DAO> daos) {
@@ -105,7 +110,6 @@ public class REC {
         for (int i = 0; i < daos.size(); i++) {
             totalCount += daos.get(i).getCount();
         }
-
         return totalCount;
     }
 
@@ -152,14 +156,7 @@ public class REC {
             dataset[i + 1] = rowResult;
         }
 
-
-        String count = String.valueOf(totalCount(daos));
-        String min = String.valueOf(minPrice(daos));
-        String max = String.valueOf(maxPrice(daos));
-
-        String[] regionSummary = new String[]{"", count, min, max, ""};
-        dataset[daos.size() + 1] = regionSummary;
-
+        dataset[daos.size() + 1] = regionSummary(daos);
         return dataset;
     }
 }

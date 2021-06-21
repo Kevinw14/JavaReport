@@ -18,11 +18,11 @@ public class TextIO {
             int largestCharacterCount = Integer.MIN_VALUE;
 
 
-            for (int j = 0; j < results[i].length; j++) {
+            for (int j = 0; j < results.length; j++) {
                 int characterCount = results[j][i].length();
                 if (characterCount > largestCharacterCount) {
                     largestCharacterCount = characterCount;
-                }    
+                }
             }
             
             rowWidths[i] = largestCharacterCount;
