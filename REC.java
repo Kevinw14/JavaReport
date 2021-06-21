@@ -135,7 +135,30 @@ public class REC {
 
     private String[][] datasetFromDao(ArrayList<DAO> daos) {
         String[] columns = new String[] { "State", "Count", "Low", "High", "Average" };
-        String[][] dataset = new String[columns.length][];
+        String[][] dataset = new String[daos.size() + 2][];
+
+        dataset[0] = columns;
+
+
+        for (int i = 0; i < daos.size(); i++) {
+            DAO dao = daos.get(i);
+            String state = dao.getState();
+            String count = String.valueOf(dao.getCount());
+            String min = String.valueOf(dao.getMin());
+            String max = String.valueOf(dao.getMax());
+            String avg = String.valueOf(dao.getAvg());
+
+            String[] rowResult = new String[]{state, count, min, max, avg};
+            dataset[i + 1] = rowResult;
+        }
+
+
+        String count = String.valueOf(totalCount(daos));
+        String min = String.valueOf(minPrice(daos));
+        String max = String.valueOf(maxPrice(daos));
+
+        String[] regionSummary = new String[]{"", count, min, max, ""};
+        dataset[daos.size() + 1] = regionSummary;
 
         return dataset;
     }
