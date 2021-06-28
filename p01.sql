@@ -15,8 +15,8 @@ DROP SEQUENCE Property_Seq;
 CREATE TABLE Customers
 (
         Cust_ID         NUMBER
-,       first           VARCHAR2(15)
-,       last            VARCHAR2(15)
+,       First           VARCHAR2(15)
+,       Last            VARCHAR2(15)
 ,       DOB             DATE
 ,       Gender          CHAR(1)
 ,       Street_Address  VARCHAR2(20)
