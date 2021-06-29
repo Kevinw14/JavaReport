@@ -1,19 +1,21 @@
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class REC {
     private final TextIO textView;
     private final CommandParser parser;
+    private boolean isDone;
 
     public REC() {
         this.textView = new TextIO();
         parser = new CommandParser();
         DataSource.getInstance();
+        isDone = false;
     }
 
     void start() {
-        String userCommand = textView.prompt("Please enter a command");
+        while(!isDone) {
+            String userCommand = textView.prompt("Please enter a command");
         String command = parser.parseCommand(userCommand);
 
         switch (command) {
@@ -27,10 +29,10 @@ public class REC {
                 reportCommand(userCommand);
                 break;
             default:
-                System.out.println();
-                System.out.println("Invalid command. list commands by typing \"help\"");
+                System.out.println("\nInvalid command. list commands by typing \"help\"");
         }
-        System.out.println();
+        System.out.println();   
+        }
     }
 
     void helpCommand() {
@@ -41,7 +43,7 @@ public class REC {
     }
 
     void quitCommand() {
-        System.exit(0);
+        isDone = true;
     }
 
     void reportCommand(String userCommand) {
@@ -71,7 +73,7 @@ public class REC {
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
             textView.display(report);
-            quitCommand();
+            isDone = true;
         } catch (SQLException e) {
             System.out.println("Error " + e);
         } finally {
@@ -87,7 +89,7 @@ public class REC {
             int[] columnWidths = textView.calculateColumnWidth(dataset);
             String report = textView.formatReport(dataset, 10, columnWidths);
             textView.display(report);
-            quitCommand();
+            isDone = true;
         } catch (SQLException e) {
             System.out.println("Error getting data: " + e.getLocalizedMessage());
         } finally {
