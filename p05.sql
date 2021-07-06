@@ -67,35 +67,12 @@ CREATE TABLE Listing(
     CONSTRAINT ListingStatusCK CHECK (Status IN ('open', 'pending', 'canceled', 'closed'))
 );
 
-CREATE TABLE Offer(
-    Offer_No NUMBER,
-    Cust_ID NUMBER,
-    Listing_ID NUMBER,
-    CONSTRAINT OfferPK PRIMARY KEY (Offer_No, Cust_ID),
-    CONSTRAINT OfferCustFK FOREIGN KEY (Cust_ID) REFERENCES Customer,
-    CONSTRAINT OfferListingFK FOREIGN KEY (Listing_ID) REFERENCES Listing
-);
-
 CREATE TABLE Preapproval(
     Approval_No NUMBER,
     Cust_ID NUMBER,
-    CONSTRAINT PreapprovalPK PRIMARY KEY (Approval_No),
+    CONSTRAINT PreapprovalPK PRIMARY KEY (Approval_No, Cust_ID),
     CONSTRAINT PreapprovalCustFK FOREIGN KEY (Cust_ID) REFERENCES Customer
 );
-
-CREATE TABLE Offer_Details(
-    Offer_No NUMBER,
-    Offer_Date DATE,
-    Exp_Date DATE,
-    Amount NUMBER,
-    Status VARCHAR2(8),
-    Approval_No NUMBER,
-    CONSTRAINT OfferDetailPK PRIMARY KEY (Offer_No),
-    CONSTRAINT OfferDetailFK FOREIGN KEY (Offer_No) REFERENCES Offer,
-    CONSTRAINT OfferApprovalFK FOREIGN KEY (Approval_No) REFERENCES Preapproval,
-    CONSTRAINT OfferDetailsCK CHECK (Status IN ('accepted', 'counter', 'declined'))
-);
-
 
 CREATE TABLE Approval_Details(
     Approval_No NUMBER,
@@ -105,6 +82,28 @@ CREATE TABLE Approval_Details(
     Amount NUMBER,
     CONSTRAINT ApprovalDetailPK PRIMARY KEY (Approval_No),
     CONSTRAINT ApprovalDetailFK FOREIGN KEY (Approval_No) REFERENCES Preapproval
+);
+
+CREATE TABLE Offer(
+    Offer_No NUMBER,
+    Cust_ID NUMBER,
+    Listing_ID NUMBER,
+    Approval_No NUMBER,
+    CONSTRAINT OfferPK PRIMARY KEY (Offer_No, Cust_ID),
+    CONSTRAINT OfferApprovalFK FOREIGN KEY (Approval_No) REFERENCES Preapproval,
+    CONSTRAINT OfferCustFK FOREIGN KEY (Cust_ID) REFERENCES Customer,
+    CONSTRAINT OfferListingFK FOREIGN KEY (Listing_ID) REFERENCES Listing
+);
+
+CREATE TABLE Offer_Details(
+    Offer_No NUMBER,
+    Offer_Date DATE,
+    Exp_Date DATE,
+    Amount NUMBER,
+    Status VARCHAR2(8),
+    CONSTRAINT OfferDetailPK PRIMARY KEY (Offer_No),
+    CONSTRAINT OfferDetailFK FOREIGN KEY (Offer_No) REFERENCES Offer,
+    CONSTRAINT OfferDetailsCK CHECK (Status IN ('accepted', 'counter', 'declined'))
 );
 
 
@@ -181,12 +180,12 @@ INSERT INTO Approval_Details(Approval_No, Approval_Date, Exp_Date, Lender, Amoun
 INSERT INTO Approval_Details(Approval_No, Approval_Date, Exp_Date, Lender, Amount) VALUES(3, '20-Jun-2020', '20-Jul-2020', 'Capital One', 15000000);
 INSERT INTO Approval_Details(Approval_No, Approval_Date, Exp_Date, Lender, Amount) VALUES(4, '20-Jun-2020', '20-Jul-2020', 'Wells Fargo', 14000000);
 
-INSERT INTO Offer(Offer_No, Cust_ID, Listing_ID) VALUES(Offer_Seq.nextval, 4, 1);
-INSERT INTO Offer(Offer_No, Cust_ID, Listing_ID) VALUES(Offer_Seq.nextval, 5, 2);
-INSERT INTO Offer(Offer_No, Cust_ID, Listing_ID) VALUES(Offer_Seq.nextval, 6, 3);
+INSERT INTO Offer(Offer_No, Cust_ID, Listing_ID, Approval_No) VALUES(Offer_Seq.nextval, 4, 1, 1);
+INSERT INTO Offer(Offer_No, Cust_ID, Listing_ID, Approval_No) VALUES(Offer_Seq.nextval, 5, 2, 2);
+INSERT INTO Offer(Offer_No, Cust_ID, Listing_ID, Approval_No) VALUES(Offer_Seq.nextval, 6, 3, 3);
 
-INSERT INTO Offer_Details(Offer_No, Offer_Date, Exp_Date, Amount, Status, Approval_No) VALUES(1, '10-Feb-2021', '17-Feb-2021', 295000, 'accepted', 1);
-INSERT INTO Offer_Details(Offer_No, Offer_Date, Exp_Date, Amount, Status, Approval_No) VALUES(2, '19-May-2021', '26-May-2021', 600000, 'declined', 2);
-INSERT INTO Offer_Details(Offer_No, Offer_Date, Exp_Date, Amount, Status, Approval_No) VALUES(3, '02-Jul-2020', '09-Jul-2020', 1230000, 'accepted', 3);
+INSERT INTO Offer_Details(Offer_No, Offer_Date, Exp_Date, Amount, Status) VALUES(1, '10-Feb-2021', '17-Feb-2021', 295000, 'accepted');
+INSERT INTO Offer_Details(Offer_No, Offer_Date, Exp_Date, Amount, Status) VALUES(2, '19-May-2021', '26-May-2021', 600000, 'declined');
+INSERT INTO Offer_Details(Offer_No, Offer_Date, Exp_Date, Amount, Status) VALUES(3, '02-Jul-2020', '09-Jul-2020', 1230000, 'accepted');
 
 COMMIT;
