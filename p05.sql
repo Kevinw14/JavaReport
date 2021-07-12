@@ -97,7 +97,8 @@ CREATE TABLE Offers(
     ApprovalNo NUMBER,
     CONSTRAINT OfferPK PRIMARY KEY (OfferID),
     CONSTRAINT OfferDetailsCK CHECK (Status IN ('accepted', 'counter', 'declined')),
-    CONSTRAINT OfferListingFK FOREIGN KEY (ListingID) REFERENCES Listings
+    CONSTRAINT OfferListingFK FOREIGN KEY (ListingID) REFERENCES Listings,
+    CONSTRAINT OfferExpCK CHECK (OfferDate < ExpireDate)
 );
 
 CREATE TABLE OfferParticipants(
@@ -253,7 +254,7 @@ INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amoun
 INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '20-Mar-2020', '20-Apr-2020', 'Wells Fargo', 14000000);
 INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '20-Mar-2020', '20-Apr-2020', 'Bank of America', 14500000);
 
-INSERT INTO Offers (OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, Status, ApprovalNo) VALUES (Offer_Seq.nextval, 10, '21-Apr-2021', '18-Apr-2021', 295150, 'accepted', 1);
+INSERT INTO Offers (OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, Status, ApprovalNo) VALUES (Offer_Seq.nextval, 10, '21-Apr-2021', '28-Apr-2021', 295150, 'accepted', 1);
 INSERT INTO Offers (OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, Status, ApprovalNo) VALUES (Offer_Seq.nextval, 12, '22-Apr-2021', '29-Apr-2021', 1250000, 'accepted', 2);
 INSERT INTO Offers (OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, Status, ApprovalNo) VALUES (Offer_Seq.nextval, 12, '22-Apr-2021', '29-Apr-2021', 1150000, 'declined', 4);
 
