@@ -12,23 +12,30 @@ BEGIN
     FROM ApprovalDetails
     WHERE ApprovalID = :NEW.ApprovalNo;
 
+    IF :NEW.OfferAmount >  vApprovalAmount THEN
+        raise_application_error(-20002, 'Offer amount can not be more than approval amount');
+    END IF;
+
     EXCEPTION
     WHEN Too_Many_Rows THEN
         DBMS_OUTPUT.PUT_LINE('Too many rows found');
         DBMS_OUTPUT.PUT_LINE('Error ' || sqlerrm);
+    WHEN No_Data_Found THEN
+        DBMS_OUTPUT.PUT_LINE('No data was found');
+        DBMS_OUTPUT.PUT_LINE('Error ' || sqlerrm);
 END;
 
-CREATE OR REPLACE PACKAGE pCustomers AS
-    TYPE VARRAY_CUSTOMERS IS VARRAY(10) OF Customers.CUSTID%TYPE;
-END pCustomers;
 
 CREATE OR REPLACE PROCEDURE CreateOffer(vListingID Listings.ListingID%Type,
-                                        vCustomers pCustomers.VARRAY_CUSTOMERS,
                                         vApprovalID ApprovalDetails.ApprovalID%Type,
                                         vOfferAmount Offers.OfferAmount%Type,
                                         vExpDate Offers.ExpireDate%Type) AS
-    Wrong_Approval_Buyer_Exception EXCEPTION;
-    PRAGMA EXCEPTION_INIT (Wrong_Approval_Buyer_Exception, -20001);
+
+    cCustID Customers.CustID%TYPE;
+
+    CURSOR cCustomers IS
+        SELECT CustID FROM Preapprovals
+        WHERE PreapprovalID = vApprovalID;
     vOfferID NUMBER;
 
 BEGIN
@@ -38,19 +45,27 @@ BEGIN
     INSERT INTO Offers(OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, ApprovalNo)
     VALUES (vOfferID, vListingID, SYSDATE, vExpDate, vOfferAmount, vApprovalID);
 
-    FOR i IN 1..vCustomers.count
+    OPEN cCustomers;
         LOOP
-            INSERT INTO OfferParticipants(OFFERID, CUSTID) VALUES (vOfferID, vCustomers(i));
+            FETCH cCustomers INTO cCustID;
+            EXIT WHEN cCustomers%NOTFOUND;
+            INSERT INTO OfferParticipants(OfferID, CustID) VALUES(vOfferID, cCustID);
         END LOOP;
+    CLOSE cCustomers;
 
 EXCEPTION
     WHEN Too_Many_Rows THEN
-        DBMS_OUTPUT.PUT_LINE('Too Many Rows were selected ' || sqlerrm);
+        DBMS_OUTPUT.PUT_LINE('Too many rows were selected ' || sqlerrm);
+        ROLLBACK;
+    WHEN No_Data_Found THEN
+        DBMS_OUTPUT.PUT_LINE('No data was found ' || sqlerrm);
+        ROLLBACK;
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE(sqlerrm);
+        ROLLBACK;
 END;
 
 BEGIN
-    CreateOffer(1, pCustomers.VARRAY_CUSTOMERS(1, 2, 3), 1, 250000, '11-Jul-2021');
+    CreateOffer(1, 1, 250000, '11-Jul-2021');
     COMMIT;
 END;
