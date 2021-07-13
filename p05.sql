@@ -11,8 +11,6 @@ DROP TABLE Customers;
 DROP SEQUENCE Prop_Seq;
 DROP SEQUENCE Address_Seq;
 DROP SEQUENCE Cust_Seq;
-DROP SEQUENCE PreApproval_Seq;
-DROP SEQUENCE Approval_Seq;
 DROP SEQUENCE Offer_Seq;
 DROP SEQUENCE Listing_Seq;
 
@@ -74,7 +72,7 @@ CREATE TABLE Preapprovals(
     PreApprovalID NUMBER,
     CustID NUMBER,
     Amount NUMBER,
-    CONSTRAINT PreapprovalPK PRIMARY KEY (PreApprovalID),
+    CONSTRAINT PreapprovalPK PRIMARY KEY (PreApprovalID, CustID),
     CONSTRAINT PreapprovalCustFK FOREIGN KEY (CustID) REFERENCES Customers
 );
 
@@ -125,16 +123,6 @@ CREATE SEQUENCE Address_Seq
 ;
 
 CREATE SEQUENCE Offer_Seq
-    START WITH 1
-    INCREMENT BY 1
-;
-
-CREATE SEQUENCE PreApproval_Seq
-    START WITH 1
-    INCREMENT BY 1
-;
-
-CREATE SEQUENCE Approval_Seq
     START WITH 1
     INCREMENT BY 1
 ;
@@ -240,19 +228,23 @@ INSERT INTO Listings (ListingID, PropertyID, ListDate, AskingPrice, Status) VALU
 INSERT INTO Listings (ListingID, PropertyID, ListDate, AskingPrice, Status) VALUES (Listing_Seq.nextval, 7, '25-Mar-2021', 150000, 'pending');
 INSERT INTO Listings (ListingID, PropertyID, ListDate, AskingPrice, Status) VALUES (Listing_Seq.nextval, 1, '29-Nov-2020', 1250000, 'open');
 
-INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (PreApproval_Seq.nextval, 17, 350000);
-INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (PreApproval_Seq.nextval, 18, 1350000);
-INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (PreApproval_Seq.nextval, 18, 1500000);
-INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (PreApproval_Seq.nextval, 19, 1400000);
-INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (PreApproval_Seq.nextval, 19, 1450000);
-INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (PreApproval_Seq.nextval, 19, 1500000);
+INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (1, 17, 350000);
+INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (2, 18, 1350000);
+INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (3, 18, 1500000);
+INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (4, 19, 1400000);
+INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (5, 19, 1450000);
+INSERT INTO Preapprovals (PreApprovalID, CustID, Amount) VALUES (6, 19, 1500000);
+INSERT INTO Preapprovals (PreapprovalID, CustID, Amount) VALUES (7, 1, 500000);
+INSERT INTO Preapprovals (PreapprovalID, CustID, Amount) VALUES (7, 2, 500000);
+INSERT INTO Preapprovals (PreapprovalID, CustID, Amount) VALUES (7, 3, 500000);
 
-INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '25-Apr-2021', '25-May-2021', 'Bank of America', 350000);
-INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '18-Mar-2021', '18-Apr-2021', 'Capital One', 1350000);
-INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '18-Mar-2021', '18-Apr-2021', 'Bank of America', 1500000);
-INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '20-Mar-2020', '20-Apr-2020', 'Capital One', 15000000);
-INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '20-Mar-2020', '20-Apr-2020', 'Wells Fargo', 14000000);
-INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (Approval_Seq.nextval, '20-Mar-2020', '20-Apr-2020', 'Bank of America', 14500000);
+INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (1, '25-Apr-2021', '25-May-2021', 'Bank of America', 350000);
+INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (2, '18-Mar-2021', '18-Apr-2021', 'Capital One', 1350000);
+INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (3, '18-Mar-2021', '18-Apr-2021', 'Bank of America', 1500000);
+INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (4, '20-Mar-2020', '20-Apr-2020', 'Capital One', 15000000);
+INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (5, '20-Mar-2020', '20-Apr-2020', 'Wells Fargo', 14000000);
+INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (6, '20-Mar-2020', '20-Apr-2020', 'Bank of America', 14500000);
+INSERT INTO ApprovalDetails (ApprovalID, ApprovalDate, ExpireDate, Lender, Amount) VALUES (7, '20-Mar-2020', '20-Apr-2020', 'Bank of America', 500000);
 
 INSERT INTO Offers (OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, Status, ApprovalNo) VALUES (Offer_Seq.nextval, 10, '21-Apr-2021', '28-Apr-2021', 295150, 'accepted', 1);
 INSERT INTO Offers (OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, Status, ApprovalNo) VALUES (Offer_Seq.nextval, 12, '22-Apr-2021', '29-Apr-2021', 1250000, 'accepted', 2);

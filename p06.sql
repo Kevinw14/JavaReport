@@ -66,6 +66,6 @@ EXCEPTION
 END;
 
 BEGIN
-    CreateOffer(1, 1, 250000, '11-Jul-2021');
+    CreateOffer(10, 7, 350000, '19-Jul-2021');
     COMMIT;
 END;
