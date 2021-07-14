@@ -1,11 +1,9 @@
 CREATE OR REPLACE TRIGGER OfferConstraint
-    BEFORE INSERT
+    BEFORE INSERT OR UPDATE OF OfferAmount
     ON Offers
     FOR EACH ROW
 DECLARE
     vApprovalAmount PreApprovals.Amount%Type;
-    Invalid_Offer_Amount EXCEPTION;
-    PRAGMA EXCEPTION_INIT ( Invalid_Offer_Amount, -20002 );
 BEGIN
     SELECT amount
     INTO vApprovalAmount
@@ -52,7 +50,7 @@ BEGIN
             INSERT INTO OfferParticipants(OfferID, CustID) VALUES(vOfferID, cCustID);
         END LOOP;
     CLOSE cCustomers;
-
+COMMIT;
 EXCEPTION
     WHEN Too_Many_Rows THEN
         DBMS_OUTPUT.PUT_LINE('Too many rows were selected ' || sqlerrm);
@@ -67,5 +65,4 @@ END;
 
 BEGIN
     CreateOffer(10, 7, 350000, '19-Jul-2021');
-    COMMIT;
 END;
