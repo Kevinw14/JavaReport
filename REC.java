@@ -14,24 +14,27 @@ public class REC {
     }
 
     void start() {
-        while(!isDone) {
+        while (!isDone) {
             String userCommand = textView.prompt("Please enter a command");
-        String command = parser.parseCommand(userCommand);
+            String command = parser.parseCommand(userCommand);
 
-        switch (command) {
-            case "help":
-                helpCommand();
-                break;
-            case "quit":
-                quitCommand();
-                break;
-            case "rpt":
-                reportCommand(userCommand);
-                break;
-            default:
-                System.out.println("\nInvalid command. list commands by typing \"help\"");
-        }
-        System.out.println();   
+            switch (command) {
+                case "help":
+                    helpCommand();
+                    break;
+                case "quit":
+                    quitCommand();
+                    break;
+                case "rpt":
+                    reportCommand(userCommand);
+                    break;
+                case "trade":
+                    tradeCommand(userCommand);
+                    break;
+                default:
+                    System.out.println("\nInvalid command. list commands by typing \"help\"");
+            }
+            System.out.println();
         }
     }
 
@@ -40,6 +43,7 @@ public class REC {
         System.out.println("help");
         System.out.println("quit");
         System.out.println("rpt [listing <min> <max>], [summary]");
+        System.out.println("trade <offer1> <offer2>");
     }
 
     void quitCommand() {
@@ -63,6 +67,20 @@ public class REC {
             default:
                 System.out.println("Invalid command. list commands by typing \"help\"");
         }
+    }
+
+    void tradeCommand(String userCommand) {
+        String[] args = parser.parseArgs(userCommand);
+        if (args.length == 2) {
+            int offer1 = Integer.parseInt(args[0]);
+            int offer2 = Integer.parseInt(args[1]);
+            try {
+                DataSource.getInstance().executeTrade(offer1, offer2);
+            } catch (SQLException e) {
+                System.out.println("Error occurred while attempting to set auto commit to true " + e);
+            }
+        }
+        isDone = true;
     }
 
     void listing(String min, String max) {
@@ -102,7 +120,7 @@ public class REC {
         String min = String.valueOf(minPrice(daos));
         String max = String.valueOf(maxPrice(daos));
 
-        String[] regionSummary = new String[]{"", count, min, max, ""};
+        String[] regionSummary = new String[] { "", count, min, max, "" };
         return regionSummary;
     }
 
@@ -145,7 +163,6 @@ public class REC {
 
         dataset[0] = columns;
 
-
         for (int i = 0; i < daos.size(); i++) {
             DAO dao = daos.get(i);
             String state = dao.getState();
@@ -154,7 +171,7 @@ public class REC {
             String max = String.valueOf(dao.getMax());
             String avg = String.valueOf(dao.getAvg());
 
-            String[] rowResult = new String[]{state, count, min, max, avg};
+            String[] rowResult = new String[] { state, count, min, max, avg };
             dataset[i + 1] = rowResult;
         }
 

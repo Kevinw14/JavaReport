@@ -88,6 +88,28 @@ public class DataSource {
         return daos;
     }
 
+    public void executeTrade(int offer1, int offer2) throws SQLException {
+
+        try {
+            conn.setAutoCommit(false);
+            CallableStatement offer1Purchase = conn.prepareCall("{call purchase(?)}");
+            CallableStatement offer2Purchase = conn.prepareCall("{call purchase(?)}");
+            
+            offer1Purchase.setInt(1, offer1);
+            offer2Purchase.setInt(1, offer2);
+
+            offer1Purchase.execute();
+            offer2Purchase.execute();
+
+            conn.commit();
+            System.out.println("Trade successful");
+        } catch (SQLException e) {
+            System.out.println("Error occurred during the trade " + e);
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+
     public void close() {
         try {
             conn.close();

@@ -4,8 +4,6 @@ CREATE OR REPLACE TRIGGER OfferConstraint
     FOR EACH ROW
 DECLARE
     vApprovalAmount PreApprovals.Amount%Type;
-    Invalid_Offer_Amount EXCEPTION;
-    PRAGMA EXCEPTION_INIT ( Invalid_Offer_Amount, -20002 );
 BEGIN
     SELECT amount
     INTO vApprovalAmount
@@ -18,25 +16,25 @@ BEGIN
 
     EXCEPTION
     WHEN Too_Many_Rows THEN
-        DBMS_OUTPUT.PUT_LINE('Too many rows found');
-        DBMS_OUTPUT.PUT_LINE('Error ' || sqlerrm);
+        DBMS_OUTPUT.PUT_LINE('Too many rows found ' || sqlerrm);
     WHEN No_Data_Found THEN
-        DBMS_OUTPUT.PUT_LINE('No data was found');
-        DBMS_OUTPUT.PUT_LINE('Error ' || sqlerrm);
+        DBMS_OUTPUT.PUT_LINE('No data was found ' || sqlerrm);
+    WHEN Others THEN
+        DBMS_OUTPUT.PUT_LINE('Unknown error in trigger' || sqlerrm);
 END;
-
+/
 
 CREATE OR REPLACE PROCEDURE CreateOffer(vListingID Listings.ListingID%Type,
                                         vApprovalID ApprovalDetails.ApprovalID%Type,
                                         vOfferAmount Offers.OfferAmount%Type,
                                         vExpDate Offers.ExpireDate%Type) AS
 
-    cCustID Customers.CustID%TYPE;
+    vCustID Customers.CustID%TYPE;
+    vOfferID NUMBER;
 
     CURSOR cCustomers IS
         SELECT CustID FROM Preapprovals
         WHERE PreapprovalID = vApprovalID;
-    vOfferID NUMBER;
 
 BEGIN
 
@@ -44,15 +42,16 @@ BEGIN
 
     INSERT INTO Offers(OfferID, ListingID, OfferDate, ExpireDate, OfferAmount, ApprovalNo)
     VALUES (vOfferID, vListingID, SYSDATE, vExpDate, vOfferAmount, vApprovalID);
-
+    
     OPEN cCustomers;
         LOOP
-            FETCH cCustomers INTO cCustID;
+            FETCH cCustomers INTO vCustID;
             EXIT WHEN cCustomers%NOTFOUND;
-            INSERT INTO OfferParticipants(OfferID, CustID) VALUES(vOfferID, cCustID);
+            INSERT INTO OfferParticipants(OfferID, CustID) VALUES(vOfferID, vCustID);
         END LOOP;
     CLOSE cCustomers;
 
+    COMMIT;
 EXCEPTION
     WHEN Too_Many_Rows THEN
         DBMS_OUTPUT.PUT_LINE('Too many rows were selected ' || sqlerrm);
@@ -61,11 +60,12 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('No data was found ' || sqlerrm);
         ROLLBACK;
     WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE(sqlerrm);
+        DBMS_OUTPUT.PUT_LINE('Unknown error ' || sqlerrm);
         ROLLBACK;
 END;
+/
 
 BEGIN
     CreateOffer(10, 7, 350000, '19-Jul-2021');
-    COMMIT;
 END;
+/
