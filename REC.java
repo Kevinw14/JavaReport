@@ -32,18 +32,16 @@ public class REC {
                     tradeCommand(userCommand);
                     break;
                 default:
-                    System.out.println("\nInvalid command. list commands by typing \"help\"");
+                    textView.display("\nInvalid command. list commands by typing \"help\"\n");
             }
-            System.out.println();
         }
     }
 
     void helpCommand() {
-        System.out.println();
-        System.out.println("help");
-        System.out.println("quit");
-        System.out.println("rpt [listing <min> <max>], [summary]");
-        System.out.println("trade <offer1> <offer2>");
+        textView.display("\nhelp");
+        textView.display("quit");
+        textView.display("rpt [listing <min> <max>], [summary]");
+        textView.display("trade <offer1> <offer2>");
     }
 
     void quitCommand() {
@@ -65,7 +63,7 @@ public class REC {
                 summary();
                 break;
             default:
-                System.out.println("Invalid command. list commands by typing \"help\"");
+            textView.display("Invalid command. list commands by typing \"help\"");
         }
     }
 
@@ -77,7 +75,7 @@ public class REC {
             try {
                 DataSource.getInstance().executeTrade(offer1, offer2);
             } catch (SQLException e) {
-                System.out.println("Error occurred while attempting to set auto commit to true " + e);
+                textView.display("Error occurred while attempting to set auto commit to true " + e);
             }
         }
         isDone = true;
@@ -93,7 +91,7 @@ public class REC {
             textView.display(report);
             isDone = true;
         } catch (SQLException e) {
-            System.out.println("Error " + e);
+            textView.display("Error " + e);
         } finally {
             DataSource.getInstance().close();
         }
@@ -109,7 +107,7 @@ public class REC {
             textView.display(report);
             isDone = true;
         } catch (SQLException e) {
-            System.out.println("Error getting data: " + e.getLocalizedMessage());
+            textView.display("Error getting data: " + e.getLocalizedMessage());
         } finally {
             DataSource.getInstance().close();
         }
