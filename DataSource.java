@@ -105,6 +105,7 @@ public class DataSource {
             System.out.println("Trade successful");
         } catch (SQLException e) {
             System.out.println("Error occurred during the trade " + e);
+            conn.rollback();
         } finally {
             conn.setAutoCommit(true);
         }

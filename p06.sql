@@ -1,5 +1,5 @@
 CREATE OR REPLACE TRIGGER OfferConstraint
-    BEFORE INSERT
+    BEFORE INSERT OR UPDATE OF OfferAmount
     ON Offers
     FOR EACH ROW
 DECLARE
@@ -50,8 +50,12 @@ BEGIN
             INSERT INTO OfferParticipants(OfferID, CustID) VALUES(vOfferID, vCustID);
         END LOOP;
     CLOSE cCustomers;
+<<<<<<< HEAD
 
     COMMIT;
+=======
+COMMIT;
+>>>>>>> a1307d8aa0b5ace9453f0322e6a3107747edbe58
 EXCEPTION
     WHEN Too_Many_Rows THEN
         DBMS_OUTPUT.PUT_LINE('Too many rows were selected ' || sqlerrm);
@@ -68,4 +72,7 @@ END;
 BEGIN
     CreateOffer(10, 7, 350000, '19-Jul-2021');
 END;
+<<<<<<< HEAD
 /
+=======
+>>>>>>> a1307d8aa0b5ace9453f0322e6a3107747edbe58
