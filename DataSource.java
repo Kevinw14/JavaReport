@@ -94,7 +94,7 @@ public class DataSource {
             conn.setAutoCommit(false);
             CallableStatement offer1Purchase = conn.prepareCall("{call purchase(?)}");
             CallableStatement offer2Purchase = conn.prepareCall("{call purchase(?)}");
-            
+
             offer1Purchase.setInt(1, offer1);
             offer2Purchase.setInt(1, offer2);
 
@@ -104,8 +104,15 @@ public class DataSource {
             conn.commit();
             System.out.println("Trade successful");
         } catch (SQLException e) {
-            System.out.println("Error occurred during the trade " + e);
-            conn.rollback();
+            System.out.println("Error occurred during transaction " + e);
+            if (conn != null) {
+                try {
+                    System.err.println("Transaction is being rolled back");
+                    conn.rollback();
+                } catch (SQLException excep) {
+                    System.out.println("Error occurred during rollback " + excep);
+                }
+            }
         } finally {
             conn.setAutoCommit(true);
         }
