@@ -41,7 +41,7 @@ public class REC {
         textView.display("\nhelp");
         textView.display("quit");
         textView.display("rpt [listing <min> <max>], [summary]");
-        textView.display("trade <offer1> <offer2>");
+        textView.display("trade <offer1> <offer2>\n");
     }
 
     void quitCommand() {
